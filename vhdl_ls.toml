@@ -1,13 +1,11 @@
 [libraries]
 work.files = [
-    'vhlib/util/*.vhd',
-    'vhlib/stream/*.vhd',
-    'vhlib/stream/model/*.vhd',
-    'vhlib/sim/*.vhd',
+    'vhlib/*/*.vhd',
+    'vhlib/*/*/*.vhd',
     'component/*.vhd',
     'test/*.vhd',
-    'test/misc/*.vhd',
-    'test/schemas/trip_report/*.vhd',
-    'test/schemas/trip_report/field/*.vhd',
-    'test/schemas/trip_report/field/matcher/*.vhd'
+    'test/*/*.vhd',
+    'test/*/*/*.vhd',
+    'test/*/*/*/*.vhd',
+    'test/*/*/*/*/*.vhd',
 ]
