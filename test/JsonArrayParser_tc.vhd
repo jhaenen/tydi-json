@@ -17,7 +17,7 @@ end JsonArrayParser_tc;
 
 architecture test_case of JsonArrayParser_tc is
 
-  constant EPC                   : integer := 8;
+  constant EPC                   : integer := 2;
   constant INTEGER_WIDTH         : integer := 64;
   constant INT_P_PIPELINE_STAGES : integer := 1;
 
@@ -79,14 +79,14 @@ begin
       count                     => in_count
     );
 
-    in_strb <= element_mask(in_count, in_dvalid, EPC); 
-    in_endi <= std_logic_vector(unsigned(in_count) - 1);
+  in_strb <= element_mask(in_count, in_dvalid, EPC); 
+  in_endi <= std_logic_vector(unsigned(in_count) - 1);
 
-    -- TODO: Is there a cleaner solutiuon? It's getting late :(
-    adv_last(EPC*2-1 downto 0) <=  std_logic_vector(shift_left(resize(unsigned'("0" & in_last), 
-              EPC*2), to_integer((unsigned(in_endi))*2+1)));
+  -- TODO: Is there a cleaner solutiuon? It's getting late :(
+  adv_last(EPC*2-1 downto 0) <=  std_logic_vector(shift_left(resize(unsigned'("0" & in_last), 
+            EPC*2), to_integer((unsigned(in_endi))*2+1)));
     
-    array_parser: JsonArrayParser
+  array_parser: JsonArrayParser
     generic map (
       EPC                       => EPC,
       OUTER_NESTING_LEVEL       => 1,
@@ -101,16 +101,17 @@ begin
       in_strb                   => in_strb,
       in_last                   => adv_last,
       out_data                  => rec_data,
+      out_valid                 => rec_valid,
+      out_ready                 => rec_ready,
       out_last                  => rec_last,
       out_stai                  => rec_stai,
       out_endi                  => rec_endi,
-      out_valid                 => rec_valid,
-      out_ready                 => rec_ready
+      out_strb                  => rec_strb
     );
 
-    int_parser: IntParser
+  int_parser: IntParser
     generic map (
-      EPC     => EPC,
+      EPC                       => EPC,
       NESTING_LEVEL             => 2,
       BITWIDTH                  => INTEGER_WIDTH,
       PIPELINE_STAGES           => INT_P_PIPELINE_STAGES
@@ -132,7 +133,7 @@ begin
 
     out_dvalid <= out_strb;
 
-    out_sink: StreamSink_mdl
+  out_sink: StreamSink_mdl
     generic map (
       NAME                      => "b",
       ELEMENT_WIDTH             => INTEGER_WIDTH,
@@ -145,8 +146,7 @@ begin
       valid                     => out_valid,
       ready                     => out_ready,
       data                      => out_data,
-      dvalid                    => out_dvalid,
-      last                      => out_last(1)
+      dvalid                    => out_dvalid
     );
 
     
@@ -160,11 +160,12 @@ begin
     a.initialize("a");
     b.initialize("b");
 
-    a.set_total_cyc(0, 10);
-    b.set_valid_cyc(0, 40);
-    b.set_total_cyc(0, 40);
+    a.push_str("[1, 2, 4, 5, 6]");
+    
+    a.set_total_cyc(0, 20);
+    b.set_valid_cyc(0, 20);
+    b.set_total_cyc(0, 20);
 
-    a.push_str("[1, 2]");
     a.transmit;
     b.unblock;
 
