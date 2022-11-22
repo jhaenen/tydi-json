@@ -66,7 +66,7 @@ begin
 
     adv_last <= std_logic_vector(shift_left(unsigned'("0000000" & in_last), to_integer(unsigned(in_endi))));
     
-    dut: IntParser
+  dut: IntParser
     generic map (
       EPC                       => 8,
       NESTING_LEVEL             => 0,
@@ -85,7 +85,7 @@ begin
       out_ready                 => out_ready
     );
 
-    out_sink: StreamSink_mdl
+  out_sink: StreamSink_mdl
     generic map (
       NAME                      => "b",
       ELEMENT_WIDTH             => 64,
