@@ -190,7 +190,7 @@ begin
     variable b        : streamsink_type;
 
   begin
-    tc_open("JsonArrayParser", "test");
+    tc_open("NestedArray", "test");
     a.initialize("a");
     b.initialize("b");
 

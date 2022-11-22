@@ -167,6 +167,7 @@ begin
                 case id(idx).data is
                   when X"5D" => -- ']'
                     if or_reduce(nesting_inner) = '0' then
+                      -- Keep processing values if we are still in an inner array.
                       if is_top_array = '1' then
                         state := STATE_ARRAY;
                       else
