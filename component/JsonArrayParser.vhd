@@ -94,6 +94,8 @@ begin
     variable nesting_level_th : std_logic_vector(INNER_NESTING_LEVEL downto 0) := (others => '0');
     variable nesting_inner    : std_logic_vector(INNER_NESTING_LEVEL downto 1) := (others => '0');
 
+    variable is_top_array     : std_logic;
+
   begin
     if rising_edge(clk) then
 
@@ -148,6 +150,7 @@ begin
             end case;
 
             nesting_inner := nesting_level_th(nesting_level_th'high downto 1);
+            is_top_array  := nesting_level_th(0);
 
             case state is
               when STATE_IDLE =>
@@ -164,11 +167,15 @@ begin
                 case id(idx).data is
                   when X"5D" => -- ']'
                     if or_reduce(nesting_inner) = '0' then
-                      state := STATE_IDLE;
-                      od(idx).last(0) := '1';
-                      od(idx).last(1) := '1';
-      
-                      od(idx).strb   := '0';
+                      if is_top_array = '1' then
+                        state := STATE_ARRAY;
+                      else
+                        state := STATE_IDLE;
+                        od(idx).last(0) := '1';
+                        od(idx).last(1) := '1';
+        
+                        od(idx).strb   := '0';
+                      end if;
                     end if;
                   when X"2C" => -- ','
                     if or_reduce(nesting_inner) = '0' then

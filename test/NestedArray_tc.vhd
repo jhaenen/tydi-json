@@ -194,7 +194,7 @@ begin
     a.initialize("a");
     b.initialize("b");
 
-    a.push_str("[ [ 1, 10, 6, 2], [ 3, 4 ], [ 5 ] ]");
+    a.push_str("[ [ 1, 10, 6, 2], [ 3, 4 ], [ 5, 88 ] ]");
     
     a.set_total_cyc(0, 40);
     b.set_valid_cyc(0, 40);
@@ -217,28 +217,33 @@ begin
       b.cq_next;
     end loop;
     tc_check(b.cq_get_d_nat, 6, "6");
-    -- b.cq_next;
-    -- while not b.cq_get_dvalid loop
-    --   b.cq_next;
-    -- end loop;
-    -- tc_check(b.cq_get_d_nat, 2, "2");
-    -- b.cq_next;
-    -- while not b.cq_get_dvalid loop
-    --   b.cq_next;
-    -- end loop;
+    b.cq_next;
+    while not b.cq_get_dvalid loop
+      b.cq_next;
+    end loop;
+    tc_check(b.cq_get_d_nat, 2, "2");
+    b.cq_next;
+    while not b.cq_get_dvalid loop
+      b.cq_next;
+    end loop;
 
-    -- tc_check(b.cq_get_d_nat, 3, "3");
-    -- b.cq_next;
-    -- while not b.cq_get_dvalid loop
-    --   b.cq_next;
-    -- end loop;
-    -- tc_check(b.cq_get_d_nat, 4, "4");
-    -- b.cq_next;
-    -- while not b.cq_get_dvalid loop
-    --   b.cq_next;
-    -- end loop;
+    tc_check(b.cq_get_d_nat, 3, "3");
+    b.cq_next;
+    while not b.cq_get_dvalid loop
+      b.cq_next;
+    end loop;
+    tc_check(b.cq_get_d_nat, 4, "4");
+    b.cq_next;
+    while not b.cq_get_dvalid loop
+      b.cq_next;
+    end loop;
 
-    -- tc_check(b.cq_get_d_nat, 5, "5");
+    tc_check(b.cq_get_d_nat, 5, "5");
+    b.cq_next;
+    while not b.cq_get_dvalid loop
+      b.cq_next;
+    end loop;
+    tc_check(b.cq_get_d_nat, 88, "88");
 
     tc_pass;
     wait;
