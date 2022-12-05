@@ -122,13 +122,13 @@ package Json_pkg is
         matcher_str_valid     : out std_logic;
         matcher_str_ready     : in  std_logic;
         matcher_str_data      : out std_logic_vector(EPC*8-1 downto 0);
-        matcher_str_mask      : out std_logic_vector(EPC-1 downto 0);
+        matcher_str_strb      : out std_logic_vector(EPC-1 downto 0);
         matcher_str_last      : out std_logic_vector(EPC-1 downto 0);
   
         matcher_match_valid   : in  std_logic;
         matcher_match_ready   : out std_logic;
         matcher_match_strb    : in  std_logic_vector(EPC-1 downto 0) := (others => '1');
-        matcher_match         : in  std_logic_vector(EPC-1 downto 0);
+        matcher_match_data    : in  std_logic_vector(EPC-1 downto 0);
   
         out_valid             : out std_logic;
         out_ready             : in  std_logic;

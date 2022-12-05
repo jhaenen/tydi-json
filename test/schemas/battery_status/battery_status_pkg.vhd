@@ -52,6 +52,34 @@ package battery_status_pkg is
 
         );
     end component;
+
+    component test_matcher is
+        generic (
+          BPC                         : positive := 1;
+          BIG_ENDIAN                  : boolean := false;
+          INPUT_REG_ENABLE            : boolean := false;
+          S12_REG_ENABLE              : boolean := true;
+          S23_REG_ENABLE              : boolean := true;
+          S34_REG_ENABLE              : boolean := true;
+          S45_REG_ENABLE              : boolean := true
+      
+        );
+        port (
+          clk                         : in  std_logic;
+          reset                       : in  std_logic := '0';
+          aresetn                     : in  std_logic := '1';
+          clken                       : in  std_logic := '1';
+          in_valid                    : in  std_logic := '1';
+          in_ready                    : out std_logic;
+          in_strb                     : in  std_logic_vector(BPC-1 downto 0) := (others => '1');
+          in_data                     : in  std_logic_vector(BPC*8-1 downto 0);
+          in_last                     : in  std_logic_vector(BPC-1 downto 0) := (others => '0');
+          out_valid                   : out std_logic;
+          out_ready                   : in  std_logic := '1';
+          out_strb                   : out std_logic_vector(BPC-1 downto 0);
+          out_data                  : out std_logic_vector(BPC*1-1 downto 0)
+        );
+      end component;
 end battery_status_pkg;
 
 

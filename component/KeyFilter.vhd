@@ -29,13 +29,13 @@ entity KeyFilter is
       matcher_str_valid     : out std_logic;
       matcher_str_ready     : in  std_logic;
       matcher_str_data      : out std_logic_vector(EPC*8-1 downto 0);
-      matcher_str_mask      : out std_logic_vector(EPC-1 downto 0);
+      matcher_str_strb      : out std_logic_vector(EPC-1 downto 0);
       matcher_str_last      : out std_logic_vector(EPC-1 downto 0);
 
       matcher_match_valid   : in  std_logic;
       matcher_match_ready   : out std_logic;
       matcher_match_strb    : in  std_logic_vector(EPC-1 downto 0) := (others => '1');
-      matcher_match         : in  std_logic_vector(EPC-1 downto 0);
+      matcher_match_data    : in  std_logic_vector(EPC-1 downto 0);
 
       out_valid             : out std_logic;
       out_ready             : in  std_logic;
@@ -104,7 +104,7 @@ architecture behavioral of KeyFilter is
         out_data                => buff_out_data
       );
 
-      matcher_slice_in(EPC-1 downto 0)     <= matcher_match;
+      matcher_slice_in(EPC-1 downto 0)     <= matcher_match_data;
       matcher_slice_in(2*EPC-1 downto EPC) <= matcher_match_strb;
 
       matcher_match_s      <= matcher_slice_out(EPC-1 downto 0);
@@ -168,7 +168,7 @@ architecture behavioral of KeyFilter is
       buff_in_data(BUFF_LAST_ENDI downto BUFF_LAST_STAI)    <= in_last;
 
       matcher_str_data <= to_stdlogicvector(to_bitvector(in_data(IN_DATA_ENDI downto IN_DATA_STAI))); -- Metavalue wanings fix. VERY DIRTY!!!
-      matcher_str_mask <= strb and (not in_tag_f);
+      matcher_str_strb <= strb and (not in_tag_f);
       matcher_str_last <= last and (not in_tag_f);
 
       buff_in_valid_t <= buff_in_valid and (or_reduce(in_tag_f) or or_reduce(in_last));

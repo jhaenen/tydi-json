@@ -7,6 +7,7 @@ use work.Stream_pkg.all;
 use work.UtilInt_pkg.all;
 use work.Json_pkg.all;
 use work.battery_status_pkg.all;
+use work.TestMisc_pkg.all;
 
 entity BattSchemaParser is
   generic (
@@ -64,6 +65,25 @@ architecture arch of BattSchemaParser is
   signal kv_strb         : std_logic_vector(EPC-1 downto 0);
   signal kv_last         : std_logic_vector(EPC*3-1 downto 0);
 
+  signal matcher_str_valid     : std_logic;
+  signal matcher_str_ready     : std_logic;
+  signal matcher_str_data      : std_logic_vector(EPC*8-1 downto 0);
+  signal matcher_str_strb      : std_logic_vector(EPC-1 downto 0);
+  signal matcher_str_last      : std_logic_vector(EPC-1 downto 0);
+
+  signal matcher_match_valid   : std_logic;
+  signal matcher_match_ready   : std_logic;
+  signal matcher_match         : std_logic_vector(EPC-1 downto 0);
+
+  signal filter_ready          : std_logic;
+  signal filter_valid          : std_logic;
+  signal filter_data           : std_logic_vector(EPC*8-1 downto 0);
+  signal filter_tag            : std_logic_vector(EPC-1 downto 0);
+  signal filter_stai           : std_logic_vector(log2ceil(EPC)-1 downto 0);
+  signal filter_endi           : std_logic_vector(log2ceil(EPC)-1 downto 0);
+  signal filter_strb           : std_logic_vector(EPC-1 downto 0);
+  signal filter_last           : std_logic_vector(EPC*3-1 downto 0);
+
   signal array_ready        : std_logic;
   signal array_valid        : std_logic;
   signal array_data         : std_logic_vector(EPC*8-1 downto 0);
@@ -102,6 +122,53 @@ begin
 
     kv_data <= kv_vec(EPC*8-1 downto 0);
 
+    voltage_kf: KeyFilter
+    generic map (
+      EPC                       => EPC,
+      OUTER_NESTING_LEVEL       => 2
+    )
+    port map (
+      clk                       => clk,
+      reset                     => reset,
+      in_valid                  => kv_valid,
+      in_ready                  => kv_ready,
+      in_data                   => kv_vec,
+      in_strb                   => kv_strb,
+      in_last                   => kv_last,
+      matcher_str_valid         => matcher_str_valid,
+      matcher_str_ready         => matcher_str_ready,
+      matcher_str_data          => matcher_str_data,
+      matcher_str_strb          => matcher_str_strb,
+      matcher_str_last          => matcher_str_last,
+      matcher_match_valid       => matcher_match_valid,
+      matcher_match_ready       => matcher_match_ready,
+      matcher_match_data        => matcher_match,
+      out_valid                 => filter_valid,
+      out_ready                 => filter_ready,
+      out_data                  => filter_data,
+      out_strb                  => filter_strb,
+      out_stai                  => filter_stai,
+      out_endi                  => filter_endi,
+      out_last                  => filter_last
+    );
+
+    regex_matcher: test_matcher
+    generic map (
+      BPC                       => EPC
+    )
+    port map (
+      clk                       => clk,
+      reset                     => reset,
+      in_valid                  => matcher_str_valid,
+      in_ready                  => matcher_str_ready,
+      in_strb                   => matcher_str_strb,
+      in_data                   => matcher_str_data,
+      in_last                   => matcher_str_last,
+      out_valid                 => matcher_match_valid,
+      out_ready                 => matcher_match_ready,
+      out_data                  => matcher_match
+    );
+
     array_parser_i: JsonArrayParser
     generic map (
       EPC                       => EPC,
@@ -111,11 +178,11 @@ begin
     port map (
       clk                       => clk,
       reset                     => reset,
-      in_valid                  => kv_valid,
-      in_ready                  => kv_ready,
-      in_data                   => kv_data,
-      in_last                   => kv_last,
-      in_strb                   => kv_strb,
+      in_valid                  => filter_valid,
+      in_ready                  => filter_ready,
+      in_data                   => filter_data,
+      in_last                   => filter_last,
+      in_strb                   => filter_strb,
       out_data                  => array_data,
       out_valid                 => array_valid,
       out_ready                 => array_ready,
