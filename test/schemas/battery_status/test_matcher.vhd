@@ -27,6 +27,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.UtilInt_pkg.all;
 
 entity test_matcher is
   generic (
@@ -35,7 +36,7 @@ entity test_matcher is
     -- Configuration
     ----------------------------------------------------------------------------
     -- Number of bytes that can be handled per cycle.
-    BPC                         : positive := 1;
+    BPC                         : positive := 8;
 
     -- Whether or not the system is big endian. This determines in which order
     -- the incoming bytes are processed.
@@ -79,6 +80,9 @@ entity test_matcher is
     -- encoded. Bytes are interpreted LSB-first by default, or MSB-first if the
     -- `BIG_ENDIAN` generic is set.
     in_strb                     : in  std_logic_vector(BPC-1 downto 0) := (others => '1');
+    in_stai                     : in  std_logic_vector(log2ceil(BPC)-1 downto 0) := (others => '0');
+    in_endi                     : in  std_logic_vector(log2ceil(BPC)-1 downto 0) := (others => '1');
+
     in_data                     : in  std_logic_vector(BPC*8-1 downto 0);
 
     -- "Last-byte-in-string" marker signal for systems which support multiple
@@ -113,7 +117,7 @@ entity test_matcher is
     --  - overlong sequences which are not apparent from the first byte
 
     -- Outgoing match stream for multiple-string-per-cycle systems.
-    out_strb                   : out std_logic_vector(BPC-1 downto 0);
+    out_strb                  : out std_logic_vector(BPC-1 downto 0);
     out_data                  : out std_logic_vector(BPC*1-1 downto 0)
     -- out_xerror                  : out std_logic_vector(BPC-1 downto 0)
 
@@ -912,25 +916,17 @@ begin
   in_ready <= ready;
 
   -- Put the input stream record signal together.
-  inp_proc: process (in_valid, in_strb, in_data, in_last) is
-    variable in_last_v : std_logic_vector(BPC-1 downto 0);
+  inp_proc: process (in_valid, in_strb, in_stai, in_endi, in_data, in_last) is
   begin
-
-    -- -- Take the "last" flags from `in_xlast`.
-    in_last_v := in_last;
-
-    -- -- Allow `in_last` to override the "last" flag for the last slot.
-    -- if BIG_ENDIAN then
-    --   in_xlast_v(0) := in_xlast_v(0) or in_last;
-    -- else
-    --   in_xlast_v(BPC-1) := in_xlast_v(BPC-1) or in_last;
-    -- end if;
-
     -- Assign the record signal.
     for i in 0 to BPC-1 loop
-      inp(i).valid <= in_valid and in_strb(i);
+      if (i >= unsigned(in_stai)) and (i <= unsigned(in_endi)) then
+        inp(i).valid <= in_valid and in_strb(i);
+      else
+        inp(i).valid <= '0';
+      end if;
       inp(i).data <= in_data(8*i+7 downto 8*i);
-      inp(i).last <= in_valid and in_last_v(i);
+      inp(i).last <= in_valid and in_last(i);
     end loop;
 
   end process;
@@ -951,7 +947,7 @@ begin
       end if;
 
       -- Unpack into the `out_x*` signals.
-      out_strb(i)                                  <= s5o(i).valid;
+      out_strb(i)                                 <= s5o(i).valid;
       out_data(NUM_RE*i+NUM_RE-1 downto NUM_RE*i) <= s5o(i).match;
       -- out_xerror(i)                                 <= s5o(i).error;
 

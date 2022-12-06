@@ -72,6 +72,8 @@ package battery_status_pkg is
           in_valid                    : in  std_logic := '1';
           in_ready                    : out std_logic;
           in_strb                     : in  std_logic_vector(BPC-1 downto 0) := (others => '1');
+          in_stai                     : in  std_logic_vector(log2ceil(BPC)-1 downto 0) := (others => '0');
+          in_endi                     : in  std_logic_vector(log2ceil(BPC)-1 downto 0) := (others => '1');
           in_data                     : in  std_logic_vector(BPC*8-1 downto 0);
           in_last                     : in  std_logic_vector(BPC-1 downto 0) := (others => '0');
           out_valid                   : out std_logic;
