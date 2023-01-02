@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library work;
-use work.Stream_pkg.all;
+-- use work.Stream_pkg.all;
 use work.UtilInt_pkg.all;
 use work.Json_pkg.all;
 use work.battery_status_pkg.all;
@@ -119,8 +119,9 @@ begin
       out_strb                    => kv_strb,
       out_last                    => kv_last
     );
-
-    kv_data <= kv_vec(EPC*8-1 downto 0);
+    
+    -- (15 downto 0) <= (17 downto 0);
+    -- kv_data <= kv_vec(EPC*8-1 downto 0);
 
     voltage_kf: KeyFilter
     generic map (
