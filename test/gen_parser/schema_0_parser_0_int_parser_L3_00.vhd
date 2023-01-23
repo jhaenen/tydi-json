@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 use ieee.std_logic_misc.all;
 
 library work;
-use work.gen_sample.all;
+use work.schema_parser.all;
 use work.UtilInt_pkg.all;
 
 entity schema_0_parser_0_int_parser_L3_00_com is

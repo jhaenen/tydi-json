@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library work;
-use work.gen_sample.all;
+use work.schema_parser.all;
 use work.UtilInt_pkg.all;
 
 entity schema_0_parser_0_voltage_matcher_L2_00_com is

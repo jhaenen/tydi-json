@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 library work;
-use work.gen_sample.all;
+use work.schema_parser.all;
 
 entity schema_0_parser_0_top_com is
   port (

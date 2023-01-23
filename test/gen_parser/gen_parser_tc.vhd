@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library work;
-use work.gen_sample.all;
+use work.schema_parser.all;
 use work.TestCase_pkg.all;
 use work.Stream_pkg.all;
 use work.ClockGen_pkg.all;

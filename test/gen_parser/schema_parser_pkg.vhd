@@ -1,7 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-package gen_sample is
+package schema_parser is
 
   component schema_0_parser_0_array_parser_L2_00_com is
     generic (
@@ -165,4 +165,4 @@ package gen_sample is
     );
   end component schema_0_parser_0_voltage_matcher_L2_00_com;
 
-end gen_sample;
+end schema_parser;

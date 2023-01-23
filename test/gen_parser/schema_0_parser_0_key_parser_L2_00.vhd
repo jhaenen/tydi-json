@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 use ieee.std_logic_misc.or_reduce;
 
 library work;
-use work.gen_sample.all;
+use work.schema_parser.all;
 use work.UtilInt_pkg.all;
 use work.Stream_pkg.all;
 
